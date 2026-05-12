@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 
 const sampleResumes = [
   {
@@ -52,9 +53,9 @@ export default function Home() {
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [jobs, setJobs] = useState<any[]>([]);
   const [resumes, setResumes] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [searchQueryJobs, setSearchQueryJobs] = useState("");
   const [selectedJobId, setSelectedJobId] = useState<string>("");
+  const [showAbout, setShowAbout] = useState(false);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("theme") as "dark" | "light" | null;
@@ -122,11 +123,26 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <div className="flex flex-col gap-6 px-8 py-8 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-4xl font-bold">AI Recruitment Hub</h1>
-          <p className="mt-2 text-sm text-[var(--muted)]">Advanced AI-powered recruitment platform</p>
+      <div className="flex flex-col gap-6 px-8 py-8 lg:flex-row lg:items-center lg:justify-between">
+        
+        {/* LOGO AND BRANDING */}
+        <div className="flex items-center gap-5">
+          <Image 
+            src="/Ailogo.png" 
+            alt="AIdeal Job Logo" 
+            width={150} 
+            height={50} 
+            className="object-contain shrink-0"
+            priority
+          />
+          <div className="flex flex-col border-l-2 border-[var(--border)] pl-5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--foreground)]">Ai Recruitment Hub</h1>
+            <p className="mt-1 text-sm sm:text-base font-medium text-[var(--muted)] max-w-[360px] leading-snug">
+              Hire smarter, not harder- let AI find the talent your business deserves
+            </p>
+          </div>
         </div>
+
         <div className="flex flex-wrap items-center gap-4">
           <button
             onClick={() => setUserType("company")}
@@ -143,7 +159,7 @@ export default function Home() {
         </div>
       </div>
 
-      <main className="grid gap-8 px-8 pb-12 xl:grid-cols-[1.25fr_0.95fr]">
+      <main className="grid gap-8 px-8 pb-8 xl:grid-cols-[1.25fr_0.95fr]">
         <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-8 shadow-lg shadow-[var(--shadow)]">
           <div>
             <h2 className="text-3xl font-semibold">Company Jobs</h2>
@@ -285,22 +301,153 @@ export default function Home() {
         </section>
       </main>
 
-      <button
-        onClick={toggleTheme}
-        className="fixed bottom-6 right-6 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--icon)] shadow-lg shadow-[var(--shadow)] transition hover:scale-105"
-        aria-label="Toggle theme"
-      >
-        {theme === "dark" ? (
-          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="5" />
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-          </svg>
+      {/* FEATURED PARTNERS BANNER */}
+      <div className="mx-8 mb-8 rounded-[2rem] bg-gradient-to-r from-cyan-500/10 via-[var(--surface)] to-[var(--background)] border border-cyan-500/20 p-8 shadow-lg transition-transform hover:-translate-y-1">
+        <div className="flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
+          <div className="max-w-xl xl:w-1/3 shrink-0">
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-500">Featured Partners</h2>
+            <p className="mt-2 text-2xl font-semibold text-[var(--foreground)]">Empowering Global Talent</p>
+            <p className="mt-2 text-sm text-[var(--muted)]">
+              Join industry leaders who are actively shaping the future. Explore premier career opportunities and resources with our top trusted partners.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full xl:w-2/3">
+            <a
+              href="https://www.intel.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-between gap-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] px-6 py-4 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[#0071c5] hover:text-[#0071c5]"
+            >
+              <span>Intel Inside - Built for AI</span>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </a>
+
+            <a
+              href="https://www.nvidia.com/en-us/drivers/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-between gap-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] px-6 py-4 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[#76b900] hover:text-[#76b900]"
+            >
+              <span>NVIDIA Official Drivers</span>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </a>
+
+            <a
+              href="https://www.tesla.com/en_PH"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-between gap-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] px-6 py-4 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-white hover:text-white"
+            >
+              <span>Tesla Philippines</span>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </a>
+
+            <a
+              href="https://www.amd.com/en/support"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-between gap-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] px-6 py-4 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-[#ed1c24] hover:text-[#ed1c24]"
+            >
+              <span>AMD Processors & Graphics</span>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* FLOATING ACTION WIDGETS */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+        
+        {/* ABOUT US POPOVER */}
+        {showAbout && (
+          <div className="w-72 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl shadow-[var(--shadow)] animate-in fade-in slide-in-from-bottom-10 origin-bottom-right">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <h3 className="text-lg font-bold text-[var(--foreground)]">About Us</h3>
+              </div>
+              <button onClick={() => setShowAbout(false)} className="text-[var(--muted)] transition hover:text-[var(--foreground)]">
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            
+            <div className="flex flex-col gap-4 text-sm text-[var(--muted)]">
+              <div className="flex items-center gap-3 transition-colors hover:text-[var(--foreground)]">
+                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>09098297670</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <a href="mailto:charlie.ponciano@email.lcup.edu.ph" className="transition-colors hover:text-[var(--accent)] break-all">
+                  charlie.ponciano@email.lcup.edu.ph
+                </a>
+              </div>
+            </div>
+          </div>
         )}
-      </button>
+
+        <div className="flex flex-col gap-4">
+          {/* ABOUT US TOGGLE BUTTON */}
+          <button
+            onClick={() => setShowAbout(!showAbout)}
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] shadow-lg shadow-[var(--shadow)] transition hover:scale-105"
+            aria-label="Toggle About Us"
+          >
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </button>
+
+          {/* THEME TOGGLE BUTTON */}
+          <button
+            onClick={toggleTheme}
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--icon)] shadow-lg shadow-[var(--shadow)] transition hover:scale-105"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -331,7 +478,25 @@ function CompanyDashboard({ onBack, onJobUpload }: { onBack: () => void; onJobUp
       <button onClick={onBack} className="mb-4 text-[var(--accent)] hover:text-[var(--accent)]/90">
         ← Back
       </button>
-      <h1 className="text-3xl font-bold mb-8">Company Dashboard</h1>
+      
+      {/* LOGO AND BRANDING */}
+      <div className="flex items-center gap-5 mb-8">
+        <Image 
+          src="/Ailogo.png" 
+          alt="AIdeal Job Logo" 
+          width={120} 
+          height={40} 
+          className="object-contain shrink-0" 
+          priority
+        />
+        <div className="flex flex-col border-l-2 border-[var(--border)] pl-4">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--foreground)]">Ai Recruitment Hub</h1>
+          <p className="mt-1 text-sm font-medium text-[var(--muted)] max-w-[320px] leading-snug">
+            Hire smarter, not harder- let AI find the talent your business deserves
+          </p>
+        </div>
+      </div>
+      
       <div className="space-y-6 max-w-4xl">
         <div className="grid gap-6 md:grid-cols-2">
           <div>
@@ -440,7 +605,25 @@ function ApplicantDashboard({ onBack, onResumeUpload }: { onBack: () => void; on
       <button onClick={onBack} className="mb-4 text-[var(--accent)] hover:text-[var(--accent)]/90">
         ← Back
       </button>
-      <h1 className="text-3xl font-bold mb-8">Applicant Dashboard</h1>
+
+      {/* LOGO AND BRANDING */}
+      <div className="flex items-center gap-5 mb-8">
+        <Image 
+          src="/Ailogo.png" 
+          alt="AIdeal Job Logo" 
+          width={120} 
+          height={40} 
+          className="object-contain shrink-0" 
+          priority
+        />
+        <div className="flex flex-col border-l-2 border-[var(--border)] pl-4">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--foreground)]">Ai Recruitment Hub</h1>
+          <p className="mt-1 text-sm font-medium text-[var(--muted)] max-w-[320px] leading-snug">
+            Hire smarter, not harder- let AI find the talent your business deserves
+          </p>
+        </div>
+      </div>
+
       <div className="space-y-6 max-w-2xl">
         <div>
           <label className="block text-sm font-medium mb-2">Upload Resume (PDF or Text)</label>

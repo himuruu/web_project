@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 
 const sampleResumes = [
@@ -55,7 +55,17 @@ export default function Home() {
   const [resumes, setResumes] = useState<any[]>([]);
   const [searchQueryJobs, setSearchQueryJobs] = useState("");
   const [selectedJobId, setSelectedJobId] = useState<string>("");
+  
+  // Floating Widget States
   const [showAbout, setShowAbout] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  
+  // Chatbot States
+  const [chatInput, setChatInput] = useState("");
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, role: "bot", text: "Hello! I'm your AI Support Assistant. Having trouble uploading a resume, posting a job, or experiencing an error? Let me know!" }
+  ]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("theme") as "dark" | "light" | null;
@@ -64,11 +74,58 @@ export default function Home() {
     document.documentElement.dataset.theme = initialTheme;
   }, []);
 
+  // Auto-scroll chat to bottom
+  useEffect(() => {
+    if (showChat) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages, showChat]);
+
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
     window.localStorage.setItem("theme", nextTheme);
     document.documentElement.dataset.theme = nextTheme;
+  };
+
+  const toggleAbout = () => {
+    setShowAbout(!showAbout);
+    if (!showAbout) setShowChat(false); // Close chat if opening about
+  };
+
+  const toggleChat = () => {
+    setShowChat(!showChat);
+    if (!showChat) setShowAbout(false); // Close about if opening chat
+  };
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userText = chatInput.trim();
+    const newMsg = { id: Date.now(), role: "user", text: userText };
+    setChatMessages((prev) => [...prev, newMsg]);
+    setChatInput("");
+
+    // AI Chatbot Troubleshooting Logic
+    setTimeout(() => {
+      let botReply = "I'm not quite sure about that. Could you provide a bit more detail about the issue you're facing?";
+      const lowerInput = userText.toLowerCase();
+
+      if (lowerInput.includes("upload") || lowerInput.includes("resume") || lowerInput.includes("pdf")) {
+        botReply = "To upload a resume, log in as an Applicant. We accept PDF and Text files. If a PDF fails to parse, ensure it's not encrypted or a scanned image, as our AI needs readable text.";
+      } else if (lowerInput.includes("job") || lowerInput.includes("company") || lowerInput.includes("post")) {
+        botReply = "If you're a company, log into the Company Dashboard to post jobs. Ensure you list 'Required Skills' clearly (e.g., React, AWS) so our AI can match candidates accurately.";
+      } else if (lowerInput.includes("score") || lowerInput.includes("match") || lowerInput.includes("rank")) {
+        botReply = "Our AI calculates match scores based on a combination of Skill Overlap (50%), Experience Quality (30%), and Overall Strength (20%). If scores look wrong, check the job's required skills.";
+      } else if (lowerInput.includes("error") || lowerInput.includes("bug") || lowerInput.includes("malfunction") || lowerInput.includes("not working")) {
+        botReply = "I'm sorry you're encountering an error! Please try refreshing the page. If the system is unresponsive, clear your browser cache. For persistent issues, contact charlie.ponciano@email.lcup.edu.ph.";
+      } else if (lowerInput.includes("hello") || lowerInput.includes("hi") || lowerInput.includes("hey")) {
+        botReply = "Hello! How can I help you troubleshoot the Recruitment Hub today?";
+      }
+
+      setChatMessages((prev) => [...prev, { id: Date.now() + 1, role: "bot", text: botReply }]);
+    }, 600);
   };
 
   const filteredJobs = useMemo(() => {
@@ -87,38 +144,17 @@ export default function Home() {
     return [...resumes].sort((a, b) => calculateMatchScore(b, selectedJob) - calculateMatchScore(a, selectedJob));
   }, [resumes, selectedJobId, jobs]);
 
-  const handleRefreshJobs = () => {
-    setJobs((prev) => [...prev]);
-  };
-
-  const handleRefreshResumes = () => {
-    setResumes((prev) => [...prev]);
-  };
-
-  const handleJobUpload = (job: any) => {
-    setJobs((prev) => [job, ...prev]);
-  };
-
-  const handleResumeUpload = (resume: any) => {
-    setResumes((prev) => [resume, ...prev]);
-  };
+  const handleRefreshJobs = () => setJobs((prev) => [...prev]);
+  const handleRefreshResumes = () => setResumes((prev) => [...prev]);
+  const handleJobUpload = (job: any) => setJobs((prev) => [job, ...prev]);
+  const handleResumeUpload = (resume: any) => setResumes((prev) => [resume, ...prev]);
 
   if (userType === "company") {
-    return (
-      <CompanyDashboard
-        onBack={() => setUserType(null)}
-        onJobUpload={handleJobUpload}
-      />
-    );
+    return <CompanyDashboard onBack={() => setUserType(null)} onJobUpload={handleJobUpload} />;
   }
 
   if (userType === "applicant") {
-    return (
-      <ApplicantDashboard
-        onBack={() => setUserType(null)}
-        onResumeUpload={handleResumeUpload}
-      />
-    );
+    return <ApplicantDashboard onBack={() => setUserType(null)} onResumeUpload={handleResumeUpload} />;
   }
 
   return (
@@ -375,6 +411,66 @@ export default function Home() {
       {/* FLOATING ACTION WIDGETS */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
         
+        {/* CHATBOT POPOVER */}
+        {showChat && (
+          <div className="w-80 h-[420px] flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl shadow-[var(--shadow)] animate-in fade-in slide-in-from-bottom-10 origin-bottom-right overflow-hidden">
+            {/* Chat Header */}
+            <div className="flex items-center justify-between bg-[var(--background)] px-5 py-4 border-b border-[var(--border)]">
+              <div className="flex items-center gap-2">
+                <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <h3 className="text-[15px] font-bold text-[var(--foreground)]">AI Support Bot</h3>
+              </div>
+              <button onClick={() => setShowChat(false)} className="text-[var(--muted)] transition hover:text-[var(--foreground)]">
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[var(--surface)]">
+              {chatMessages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
+                    msg.role === "user" 
+                      ? "bg-[var(--accent)] text-[#020617] rounded-br-sm" 
+                      : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] rounded-bl-sm"
+                  }`}>
+                    {msg.text}
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Chat Input */}
+            <form onSubmit={handleSendMessage} className="p-3 border-t border-[var(--border)] bg-[var(--background)]">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Describe your issue..."
+                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-full pl-4 pr-10 py-2.5 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+                />
+                <button 
+                  type="submit" 
+                  disabled={!chatInput.trim()}
+                  className="absolute right-1.5 top-1.5 p-1.5 rounded-full bg-[var(--accent)] text-[#020617] disabled:opacity-50 disabled:bg-[var(--muted)] transition-colors"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
         {/* ABOUT US POPOVER */}
         {showAbout && (
           <div className="w-72 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl shadow-[var(--shadow)] animate-in fade-in slide-in-from-bottom-10 origin-bottom-right">
@@ -416,10 +512,30 @@ export default function Home() {
         )}
 
         <div className="flex flex-col gap-4">
+          
+          {/* CHATBOT WIDGET BUTTON */}
+          <button
+            onClick={toggleChat}
+            className={`inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-lg transition hover:scale-105 ${
+              showChat 
+                ? "bg-[var(--accent)] text-[#020617] border-[var(--accent)]" 
+                : "bg-[var(--surface)] text-[var(--accent)] border-[var(--border)] shadow-[var(--shadow)]"
+            }`}
+            aria-label="Toggle AI Chat Support"
+          >
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+
           {/* ABOUT US TOGGLE BUTTON */}
           <button
-            onClick={() => setShowAbout(!showAbout)}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] shadow-lg shadow-[var(--shadow)] transition hover:scale-105"
+            onClick={toggleAbout}
+            className={`inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-lg transition hover:scale-105 ${
+              showAbout 
+                ? "bg-[var(--accent)] text-[#020617] border-[var(--accent)]" 
+                : "bg-[var(--surface)] text-[var(--accent)] border-[var(--border)] shadow-[var(--shadow)]"
+            }`}
             aria-label="Toggle About Us"
           >
             <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

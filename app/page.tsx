@@ -1,11 +1,29 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Dashboard from "./dashboard";
 
 export default function Home() {
-  const [showDashboard, setShowDashboard] = useState(false);
+  const [showDashboard, setShowDashboard] = useState<boolean | null>(null);
+
+  // Determine initial state on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem("showDashboard");
+    // Default to dashboard on reload to prevent flash
+    setShowDashboard(savedState !== "false");
+  }, []);
+
+  // Save dashboard state to localStorage whenever it changes
+  useEffect(() => {
+    if (showDashboard === null) return;
+    localStorage.setItem("showDashboard", showDashboard.toString());
+  }, [showDashboard]);
+
+  // Don't render anything until we've determined the state
+  if (showDashboard === null) {
+    return <div className="min-h-screen bg-[var(--background)]" />;
+  }
 
   if (showDashboard) {
     return <Dashboard onBackToHome={() => setShowDashboard(false)} />;

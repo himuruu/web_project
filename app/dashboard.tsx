@@ -381,7 +381,7 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
               href="https://www.tesla.com/en_PH"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center justify-between gap-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] px-6 py-4 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-white hover:text-white"
+              className="group inline-flex items-center justify-between gap-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] px-6 py-4 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:border-gray-400 hover:text-gray-400"
             >
               <span>Tesla Philippines</span>
               <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

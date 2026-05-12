@@ -10,6 +10,10 @@
   --accent: #38bdf8;
   --icon: #38bdf8;
   --shadow: rgba(0, 0, 0, 0.45);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 :root[data-theme="light"] {
@@ -22,13 +26,6 @@
   --accent: #0f6d7a;
   --icon: #38bdf8;
   --shadow: rgba(0, 0, 0, 0.12);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 body {

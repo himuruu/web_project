@@ -3,6 +3,25 @@
 :root {
   --background: #020617;
   --foreground: #f8fafc;
+  --surface: #0f172a;
+  --input: #111827;
+  --border: #334155;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --icon: #38bdf8;
+  --shadow: rgba(0, 0, 0, 0.45);
+}
+
+:root[data-theme="light"] {
+  --background: #DBF9F9;
+  --foreground: #020617;
+  --surface: #F8F9FB;
+  --input: #D2ECFB;
+  --border: #D2ECFB;
+  --muted: #64748b;
+  --accent: #0f6d7a;
+  --icon: #38bdf8;
+  --shadow: rgba(0, 0, 0, 0.12);
 }
 
 @theme inline {

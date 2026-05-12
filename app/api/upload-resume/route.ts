@@ -12,15 +12,11 @@ export async function POST(request: NextRequest) {
       // If no text provided and it's a text file, read it
       if (resumeFile.type === "text/plain") {
         resumeText = await resumeFile.text();
-      } else if (resumeFile.type === "application/pdf") {
-        return NextResponse.json({ error: "PDF text extraction failed. Please ensure the PDF contains selectable text." }, { status: 400 });
-      } else {
-        return NextResponse.json({ error: "Unsupported file type. Please upload a PDF or text file." }, { status: 400 });
       }
     }
 
-    if (!resumeText || resumeText.trim().length === 0) {
-      return NextResponse.json({ error: "No resume text found. Please ensure your file contains readable text." }, { status: 400 });
+    if (!resumeText) {
+      return NextResponse.json({ error: "No resume text provided" }, { status: 400 });
     }
 
     // Extract resume information using AI-like logic

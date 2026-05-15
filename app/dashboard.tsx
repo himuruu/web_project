@@ -630,44 +630,74 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
         )}
 
         {/* ABOUT US POPOVER */}
-        {showAbout && (
-          <div className="w-72 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl shadow-[var(--shadow)] animate-in fade-in slide-in-from-bottom-10 origin-bottom-right">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="16" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                <h3 className="text-lg font-bold text-[var(--foreground)]">About Us</h3>
-              </div>
-              <button onClick={() => setShowAbout(false)} className="text-[var(--muted)] transition hover:text-[var(--foreground)]">
-                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
+{showAbout && (
+  <div className="w-80 md:w-96 max-h-[80vh] overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl shadow-[var(--shadow)] animate-in fade-in slide-in-from-bottom-10 origin-bottom-right custom-scrollbar">
+    
+    {/* Popover Header */}
+    <div className="mb-5 flex items-center justify-between sticky top-0 bg-[var(--surface)] pb-2 border-b border-[var(--border)]">
+      <div className="flex items-center gap-2">
+        <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <h3 className="text-lg font-bold text-[var(--foreground)]">Our Team</h3>
+      </div>
+      <button onClick={() => setShowAbout(false)} className="text-[var(--muted)] transition hover:text-[var(--foreground)] p-1 rounded-md hover:bg-[var(--border)]/30">
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    {/* Team Members Directory List */}
+    <div className="flex flex-col gap-5">
+      {[
+        { name: "Ralph Xaviery Joson", email: "ralphxaviery.joson@email.lcup.edu.ph", phone: "09625309970" },
+        { name: "Jansen Ashley De Vera", email: "jansenashley.devera@email.lcup.edu.ph", phone: "09947495408" },
+        { name: "James Dominic Ventura", email: "jamesdominic.ventura@email.lcup.edu.ph", phone: "09684188734" },
+        { name: "Rainier Andrei Rodriguez", email: "rainierandrei.rodriguez@email.lcup.edu.ph", phone: "09626768096" },
+        { name: "Charlie Ponciano", email: "charlie.ponciano@email.lcup.edu.ph", phone: "09098297670" }
+      ].map((member, idx) => (
+        <div key={idx} className="pb-4 border-b border-[var(--border)]/50 last:border-0 last:pb-0">
+          {/* Member Name */}
+          <h4 className="font-semibold text-[var(--foreground)] mb-2 text-sm">{member.name}</h4>
+          
+          <div className="flex flex-col gap-2 text-xs text-[var(--muted)]">
             
-            <div className="flex flex-col gap-4 text-sm text-[var(--muted)]">
-              <div className="flex items-center gap-3 transition-colors hover:text-[var(--foreground)]">
-                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-                <span>09098297670</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                  <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-                <a href="mailto:charlie.ponciano@email.lcup.edu.ph" className="transition-colors hover:text-[var(--accent)] break-all">
-                  charlie.ponciano@email.lcup.edu.ph
-                </a>
-              </div>
-            </div>
+            {/* Phone Item - Opens Contact/Dialer */}
+            <a 
+              href={`tel:${member.phone}`} 
+              className="flex items-center gap-2.5 transition-colors hover:text-[var(--foreground)] hover:underline group w-fit"
+              title="Click to call or add to contacts"
+            >
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-[var(--muted)] group-hover:text-[var(--accent)] transition-colors" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <span>{member.phone}</span>
+            </a>
+            
+            {/* Email Item - Opens Gmail/Mail client */}
+            <a 
+              href={`mailto:${member.email}`} 
+              className="flex items-center gap-2.5 transition-colors text-[var(--muted)] hover:text-[var(--accent)] break-all hover:underline group w-fit"
+              title="Click to compose an email"
+            >
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-[var(--muted)] group-hover:text-[var(--accent)] transition-colors" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>{member.email}</span>
+            </a>
+
           </div>
-        )}
+        </div>
+      ))}
+    </div>
+
+  </div>
+)}
 
         <div className="flex flex-col gap-4">
           

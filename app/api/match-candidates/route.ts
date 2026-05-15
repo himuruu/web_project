@@ -56,24 +56,14 @@ export async function POST(request: NextRequest) {
 function calculateSkillMatchScore(resume: any, job: any): number {
   const resumeSkills = [...resume.skills.technical, ...resume.skills.soft].map(s => s.toLowerCase());
   const jobRequiredSkills = job.requiredSkills.map((s: string) => s.toLowerCase());
-  const jobOptionalSkills = job.optionalSkills.map((s: string) => s.toLowerCase());
 
   let score = 0;
   let totalWeight = 0;
 
-  // Required skills (higher weight)
   jobRequiredSkills.forEach((skill: string) => {
     totalWeight += 3;
     if (resumeSkills.some((rs: string) => rs.includes(skill) || skill.includes(rs))) {
       score += 3;
-    }
-  });
-
-  // Optional skills (lower weight)
-  jobOptionalSkills.forEach((skill: string) => {
-    totalWeight += 1;
-    if (resumeSkills.some((rs: string) => rs.includes(skill) || skill.includes(rs))) {
-      score += 1;
     }
   });
 
@@ -83,15 +73,6 @@ function calculateSkillMatchScore(resume: any, job: any): number {
 function calculateContextFit(resume: any, job: any): number {
   let score = 50; // Base score
 
-  // Seniority alignment
-  const seniorityMatch = resume.experienceQuality > 70 && job.seniority === "senior" ||
-                        resume.experienceQuality > 40 && job.seniority === "mid" ||
-                        resume.experienceQuality <= 40 && job.seniority === "junior";
-
-  if (seniorityMatch) score += 20;
-  else score -= 10;
-
-  // Environment alignment
   const environmentKeywords = {
     frontend: ["frontend", "ui", "ux", "react", "vue", "angular", "css", "html"],
     backend: ["backend", "api", "server", "database", "node", "python", "java"],
@@ -100,10 +81,17 @@ function calculateContextFit(resume: any, job: any): number {
     mobile: ["mobile", "ios", "android", "react native", "flutter"],
   };
 
-  const jobEnvKeywords = environmentKeywords[job.environment as keyof typeof environmentKeywords] || [];
   const resumeText = resume.text.toLowerCase();
+  const normalizedEnvironment = String(job.environment || "").toLowerCase().trim();
+  const jobEnvKeywords = environmentKeywords[normalizedEnvironment as keyof typeof environmentKeywords] || [];
 
-  const envMatches = jobEnvKeywords.filter((keyword: string) => resumeText.includes(keyword)).length;
+  let envMatches = jobEnvKeywords.filter((keyword: string) => resumeText.includes(keyword)).length;
+  if (!jobEnvKeywords.length && normalizedEnvironment && normalizedEnvironment !== "not specified") {
+    envMatches += resumeText.includes(normalizedEnvironment) ? 1 : 0;
+    const fallbackKeywords = ["remote", "on-site", "onsite", "hybrid", "office"];
+    envMatches += fallbackKeywords.filter(keyword => normalizedEnvironment.includes(keyword) && resumeText.includes(keyword)).length;
+  }
+
   score += Math.min(envMatches * 5, 20);
 
   return Math.max(0, Math.min(100, score));
@@ -112,16 +100,9 @@ function calculateContextFit(resume: any, job: any): number {
 function calculateExperienceRelevance(resume: any, job: any): number {
   let score = resume.experienceQuality;
 
-  // Adjust based on job seniority requirements
-  if (job.seniority === "senior" && resume.experienceQuality < 60) score -= 20;
-  if (job.seniority === "junior" && resume.experienceQuality > 80) score -= 10; // Overqualified
-
-  // Look for relevant experience keywords in resume
   const relevantKeywords = [
     ...job.requiredSkills,
-    ...job.optionalSkills,
-    job.environment,
-    job.seniority
+    ...(job.environment && job.environment !== "Not specified" ? [job.environment] : []),
   ];
 
   const resumeText = resume.text.toLowerCase();
@@ -136,7 +117,7 @@ function calculateExperienceRelevance(resume: any, job: any): number {
 
 function identifySkillGaps(resume: any, job: any): string[] {
   const resumeSkills = [...resume.skills.technical, ...resume.skills.soft].map(s => s.toLowerCase());
-  const allJobSkills = [...job.requiredSkills, ...job.optionalSkills].map(s => s.toLowerCase());
+  const allJobSkills = [...job.requiredSkills].map((s: string) => s.toLowerCase());
 
   return allJobSkills.filter(jobSkill =>
     !resumeSkills.some(resumeSkill =>
@@ -165,7 +146,7 @@ function generateMatchExplanation(resume: any, job: any, skillMatch: number, con
   }
 
   if (experienceRelevance > 80) {
-    explanations.push("Experience level perfectly matches seniority requirements");
+    explanations.push("Experience level is well aligned with the role");
   } else if (experienceRelevance > 60) {
     explanations.push("Experience level is appropriate for the role");
   } else {
@@ -180,8 +161,7 @@ function getInterviewSuggestion(job: any, resume: any): string[] {
 
   // Technical questions based on matched skills
   const matchedSkills = [...resume.skills.technical, ...resume.skills.soft].filter(skill =>
-    job.requiredSkills.some((js: string) => js.toLowerCase().includes(skill.toLowerCase())) ||
-    job.optionalSkills.some((js: string) => js.toLowerCase().includes(skill.toLowerCase()))
+    job.requiredSkills.some((js: string) => js.toLowerCase().includes(skill.toLowerCase()))
   );
 
   matchedSkills.slice(0, 2).forEach(skill => {

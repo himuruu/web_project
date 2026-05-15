@@ -55,6 +55,7 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
   const [resumes, setResumes] = useState<any[]>([]);
   const [searchQueryJobs, setSearchQueryJobs] = useState("");
   const [selectedJobId, setSelectedJobId] = useState<string>("");
+  const [rightPanelView, setRightPanelView] = useState<"ranking" | "detail">("ranking");
   
   // Floating Widget States
   const [showAbout, setShowAbout] = useState(false);
@@ -244,15 +245,20 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
                     <h3 className="text-xl font-semibold">{job.title}</h3>
                     <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{job.description}</p>
                   </div>
-                  <div className="rounded-full bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
-                    {job.seniority || "Not specified"}
-                  </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="mt-6 grid gap-4 sm:grid-cols-3">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Environment</p>
                     <p className="mt-2 text-lg font-semibold text-[var(--foreground)]">{job.environment || "Not specified"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Monthly Pay</p>
+                    <p className="mt-2 text-sm text-[var(--foreground)]">
+                      {job.monthlyPayMin && job.monthlyPayMax
+                        ? `₱${job.monthlyPayMin.toLocaleString()} - ₱${job.monthlyPayMax.toLocaleString()}`
+                        : "Not specified"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Required Skills</p>
@@ -271,69 +277,221 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
         </section>
 
         <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-8 shadow-lg shadow-[var(--shadow)]">
-          <div>
-            <h2 className="text-3xl font-semibold">Applicant Ranking</h2>
-            <p className="mt-3 text-sm text-[var(--muted)]">
-              Ranked applicants based on selected job match. Click a job on the left to rank applicants.
-            </p>
-          </div>
-
-          <div className="mt-8 flex justify-end">
-            <button
-              onClick={handleRefreshResumes}
-              className="rounded-full border border-[var(--border)] bg-[var(--surface)] p-3 text-[var(--foreground)] transition hover:bg-[var(--surface)]/90"
-              title="Refresh resumes"
-            >
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-                <path d="M21 3v5h-5" />
-                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-                <path d="M8 16H3v5" />
-              </svg>
-            </button>
-          </div>
-
-          <div className="mt-8 space-y-6">
-            {rankedResumes.map((resume, index) => {
-              const selectedJob = jobs.find(job => job.id === selectedJobId);
-              const matchScore = selectedJob ? calculateMatchScore(resume, selectedJob) : 0;
-              return (
-                <article key={resume.id} className="rounded-[1.75rem] border border-[var(--border)] bg-[var(--background)] p-6 shadow-sm shadow-[var(--shadow)]">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold">{resume.name} <span className="text-sm text-[var(--muted)]">#{index + 1}</span></h3>
-                      <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{getResumeSummaryText(resume)}</p>
-                    </div>
-                    <div className="flex flex-col gap-2 items-end">
-                      <div className="rounded-full bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
-                        Match Score {matchScore}%
-                      </div>
-                      <div className="rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300">
-                        Strength {resume.strengthScore ?? resume.strength}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Experience Quality</p>
-                      <p className="mt-2 text-lg font-semibold text-[var(--foreground)]">{resume.experienceQuality ?? resume.experience}%</p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Skills</p>
-                      <p className="mt-2 text-sm text-[var(--foreground)]">{normalizeResumeSkills(resume.skills).join(", ")}</p>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-
-            {rankedResumes.length === 0 && (
-              <div className="rounded-[1.75rem] border border-[var(--border)] bg-[var(--background)] p-6 text-sm text-[var(--muted)]">
-                {selectedJobId ? "No applicants available for this job." : "Click a job on the left to rank applicants."}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-3xl font-semibold">
+                {rightPanelView === "ranking" ? "Applicant Ranking" : "Job Detail"}
+              </h2>
+              <p className="mt-3 text-sm text-[var(--muted)]">
+                {rightPanelView === "ranking" 
+                  ? "Ranked applicants based on selected job match. Click a job on the left to rank applicants."
+                  : "Detailed information about the selected job. Click a job on the left to view details."
+                }
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-full p-1">
+                <button
+                  onClick={() => setRightPanelView("ranking")}
+                  className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
+                    rightPanelView === "ranking"
+                      ? "bg-[var(--accent)] text-[#020617] shadow-sm"
+                      : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                  }`}
+                  title="View Applicant Rankings"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 2l-4 4-4-4" />
+                  </svg>
+                  Rankings
+                </button>
+                <button
+                  onClick={() => setRightPanelView("detail")}
+                  className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
+                    rightPanelView === "detail"
+                      ? "bg-[var(--accent)] text-[#020617] shadow-sm"
+                      : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                  }`}
+                  title="View Job Details"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14,2 14,8 20,8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10,9 9,9 8,9" />
+                  </svg>
+                  Details
+                </button>
               </div>
-            )}
+              {rightPanelView === "ranking" && (
+                <button
+                  onClick={handleRefreshResumes}
+                  className="rounded-full border border-[var(--border)] bg-[var(--surface)] p-3 text-[var(--foreground)] transition hover:bg-[var(--surface)]/90"
+                  title="Refresh resumes"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                    <path d="M21 3v5h-5" />
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                    <path d="M8 16H3v5" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
+
+          {rightPanelView === "ranking" ? (
+            <div className="mt-8 space-y-6">
+              {rankedResumes.map((resume, index) => {
+                const selectedJob = jobs.find(job => job.id === selectedJobId);
+                const matchScore = selectedJob ? calculateMatchScore(resume, selectedJob) : 0;
+                return (
+                  <article key={resume.id} className="rounded-[1.75rem] border border-[var(--border)] bg-[var(--background)] p-6 shadow-sm shadow-[var(--shadow)]">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold">{resume.name} <span className="text-sm text-[var(--muted)]">#{index + 1}</span></h3>
+                        <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{getResumeSummaryText(resume)}</p>
+                      </div>
+                      <div className="flex flex-col gap-2 items-end">
+                        <div className="rounded-full bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
+                          Match Score {matchScore}%
+                        </div>
+                        <div className="rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300">
+                          Strength {resume.strengthScore ?? resume.strength}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Experience Quality</p>
+                        <p className="mt-2 text-lg font-semibold text-[var(--foreground)]">{resume.experienceQuality ?? resume.experience}%</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Skills</p>
+                        <p className="mt-2 text-sm text-[var(--foreground)]">{normalizeResumeSkills(resume.skills).join(", ")}</p>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+
+              {rankedResumes.length === 0 && (
+                <div className="rounded-[1.75rem] border border-[var(--border)] bg-[var(--background)] p-6 text-sm text-[var(--muted)]">
+                  {selectedJobId ? "No applicants available for this job." : "Click a job on the left to rank applicants."}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mt-8">
+              {selectedJobId ? (
+                (() => {
+                  const selectedJob = jobs.find(job => job.id === selectedJobId);
+                  return selectedJob ? (
+                    <div className="space-y-6">
+                      <div className="rounded-[1.75rem] border border-[var(--border)] bg-[var(--background)] p-8 shadow-sm shadow-[var(--shadow)]">
+                        <div className="flex flex-col gap-6">
+                          <div>
+                            <h3 className="text-2xl font-semibold text-[var(--foreground)]">{selectedJob.title}</h3>
+                            <div className="mt-6">
+                              <h4 className="text-lg font-semibold text-[var(--foreground)] mb-4">Job Description</h4>
+                              <div className="prose prose-sm max-w-none text-[var(--foreground)] leading-relaxed">
+                                <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-6">
+                                  <div className="whitespace-pre-line text-base leading-7">
+                                    {selectedJob.description}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
+                              <div className="flex items-center gap-2 mb-2">
+                                <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M20 7h-3V6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v1H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1Z" />
+                                  <path d="M14 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+                                </svg>
+                                <p className="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--muted)]">Work Environment</p>
+                              </div>
+                              <p className="text-base font-medium text-[var(--foreground)]">{selectedJob.environment || "Not specified"}</p>
+                            </div>
+                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
+                              <div className="flex items-center gap-2 mb-2">
+                                <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <line x1="12" y1="1" x2="12" y2="23" />
+                                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                </svg>
+                                <p className="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--muted)]">Monthly Salary</p>
+                              </div>
+                              <p className="text-base font-medium text-[var(--foreground)]">
+                                {selectedJob.monthlyPayMin && selectedJob.monthlyPayMax
+                                  ? `₱${selectedJob.monthlyPayMin.toLocaleString()} - ₱${selectedJob.monthlyPayMax.toLocaleString()}`
+                                  : "Not specified"}
+                              </p>
+                            </div>
+                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
+                              <div className="flex items-center gap-2 mb-2">
+                                <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                                </svg>
+                                <p className="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--muted)]">Required Skills</p>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {selectedJob.requiredSkills?.length > 0 ? (
+                                  selectedJob.requiredSkills.map((skill: string, index: number) => (
+                                    <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
+                                      {skill}
+                                    </span>
+                                  ))
+                                ) : (
+                                  <span className="text-sm text-[var(--muted)]">None specified</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {selectedJob.interviewQuestions && selectedJob.interviewQuestions.length > 0 && (
+                            <div>
+                              <div className="flex items-center gap-2 mb-4">
+                                <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
+                                </svg>
+                                <h4 className="text-lg font-semibold text-[var(--foreground)]">Interview Questions</h4>
+                              </div>
+                              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-6">
+                                <div className="space-y-4">
+                                  {selectedJob.interviewQuestions.slice(0, 5).map((question: string, index: number) => (
+                                    <div key={index} className="flex items-start gap-3">
+                                      <div className="flex-shrink-0 w-6 h-6 bg-[var(--accent)] text-[#020617] rounded-full flex items-center justify-center text-xs font-semibold mt-0.5">
+                                        {index + 1}
+                                      </div>
+                                      <p className="text-sm text-[var(--foreground)] leading-relaxed">{question}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-[1.75rem] border border-[var(--border)] bg-[var(--background)] p-6 text-sm text-[var(--muted)]">
+                      Job not found.
+                    </div>
+                  );
+                })()
+              ) : (
+                <div className="rounded-[1.75rem] border border-[var(--border)] bg-[var(--background)] p-6 text-sm text-[var(--muted)]">
+                  Click a job on the left to view details.
+                </div>
+              )}
+            </div>
+          )}
         </section>
       </main>
 
@@ -572,21 +730,43 @@ function CompanyDashboard({ onBack, onJobUpload }: { onBack: () => void; onJobUp
   const [jobTitle, setJobTitle] = useState("");
   const [jobSkills, setJobSkills] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [jobEnvironment, setJobEnvironment] = useState("");
+  const [jobMinPay, setJobMinPay] = useState("");
+  const [jobMaxPay, setJobMaxPay] = useState("");
   const [uploadedJob, setUploadedJob] = useState<any>(null);
 
   const uploadJob = async () => {
-    const formData = new FormData();
-    formData.append("jobTitle", jobTitle);
-    formData.append("jobDescription", jobDescription);
-    formData.append("jobSkills", jobSkills);
+    if (!jobTitle || !jobDescription || !jobSkills) {
+      alert("Please fill in all required fields");
+      return;
+    }
 
-    const response = await fetch("/api/upload-job", {
-      method: "POST",
-      body: formData,
-    });
-    const result = await response.json();
-    setUploadedJob(result);
-    onJobUpload(result);
+    try {
+      const formData = new FormData();
+      formData.append("jobTitle", jobTitle);
+      formData.append("jobDescription", jobDescription);
+      formData.append("jobSkills", jobSkills);
+      formData.append("jobEnvironment", jobEnvironment);
+      formData.append("jobMinPay", jobMinPay);
+      formData.append("jobMaxPay", jobMaxPay);
+
+      const response = await fetch("/api/upload-job", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Uploaded job:", result);
+      setUploadedJob(result);
+      onJobUpload(result);
+    } catch (error) {
+      console.error("Error uploading job:", error);
+      alert("Failed to upload job. Please try again.");
+    }
   };
 
   return (
@@ -633,6 +813,37 @@ function CompanyDashboard({ onBack, onJobUpload }: { onBack: () => void; onJobUp
             />
           </div>
         </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          <div>
+            <label className="block text-sm font-medium mb-2">Environment</label>
+            <input
+              value={jobEnvironment}
+              onChange={(e) => setJobEnvironment(e.target.value)}
+              placeholder="e.g., Remote, On-site, Hybrid"
+              className="w-full bg-[var(--input)] border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--foreground)]"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Min Pay / month</label>
+            <input
+              type="number"
+              value={jobMinPay}
+              onChange={(e) => setJobMinPay(e.target.value)}
+              placeholder="e.g., 25000"
+              className="w-full bg-[var(--input)] border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--foreground)]"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Max Pay / month</label>
+            <input
+              type="number"
+              value={jobMaxPay}
+              onChange={(e) => setJobMaxPay(e.target.value)}
+              placeholder="e.g., 45000"
+              className="w-full bg-[var(--input)] border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--foreground)]"
+            />
+          </div>
+        </div>
         <div>
           <label className="block text-sm font-medium mb-2">Job Description</label>
           <textarea
@@ -652,8 +863,13 @@ function CompanyDashboard({ onBack, onJobUpload }: { onBack: () => void; onJobUp
           <div className="mt-6 p-4 bg-[var(--surface)] border border-[var(--border)] rounded-lg">
             <h3 className="text-lg font-semibold">Uploaded Job</h3>
             <p className="mt-2 text-sm text-[var(--muted)]">Title: {uploadedJob.title}</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">Seniority: {uploadedJob.seniority}</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">Description: {uploadedJob.description}</p>
             <p className="mt-1 text-sm text-[var(--muted)]">Environment: {uploadedJob.environment}</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              Monthly Pay: {uploadedJob.monthlyPayMin && uploadedJob.monthlyPayMax
+                ? `₱${uploadedJob.monthlyPayMin.toLocaleString()} - ₱${uploadedJob.monthlyPayMax.toLocaleString()}`
+                : "Not specified"}
+            </p>
             <p className="mt-1 text-sm text-[var(--muted)]">Required Skills: {uploadedJob.requiredSkills?.join(", ")}</p>
           </div>
         )}

@@ -10,8 +10,8 @@ export default function Home() {
   // Determine initial state on mount
   useEffect(() => {
     const savedState = localStorage.getItem("showDashboard");
-    // Default to dashboard on reload to prevent flash
-    setShowDashboard(savedState !== "false");
+    // Default to home page on first visit to show landing page
+    setShowDashboard(savedState === "true");
   }, []);
 
   // Save dashboard state to localStorage whenever it changes

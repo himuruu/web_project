@@ -23,6 +23,13 @@ const sampleResumes = [
   },
 ];
 
+const currencyFormatter = new Intl.NumberFormat("en-PH");
+
+function formatCurrency(n?: number) {
+  if (n == null) return "";
+  return currencyFormatter.format(n);
+}
+
 function normalizeResumeSkills(skills: any): string[] {
   if (!skills) return [];
   if (Array.isArray(skills)) return skills;
@@ -167,9 +174,9 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
           <Image 
             src="/Ailogo.png" 
             alt="AIdeal Job Logo" 
-            width={150} 
-            height={50} 
-            className="object-contain shrink-0"
+            width={64} 
+            height={64} 
+            className="object-contain w-16 h-16 shrink-0"
             priority
           />
           <div className="flex flex-col border-l-2 border-[var(--border)] pl-5">
@@ -256,7 +263,7 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Monthly Pay</p>
                     <p className="mt-2 text-sm text-[var(--foreground)]">
                       {job.monthlyPayMin && job.monthlyPayMax
-                        ? `₱${job.monthlyPayMin.toLocaleString()} - ₱${job.monthlyPayMax.toLocaleString()}`
+                        ? `₱${formatCurrency(job.monthlyPayMin)} - ₱${formatCurrency(job.monthlyPayMax)}`
                         : "Not specified"}
                     </p>
                   </div>
@@ -428,9 +435,9 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
                                 <p className="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--muted)]">Monthly Salary</p>
                               </div>
                               <p className="text-base font-medium text-[var(--foreground)]">
-                                {selectedJob.monthlyPayMin && selectedJob.monthlyPayMax
-                                  ? `₱${selectedJob.monthlyPayMin.toLocaleString()} - ₱${selectedJob.monthlyPayMax.toLocaleString()}`
-                                  : "Not specified"}
+                                  {selectedJob.monthlyPayMin && selectedJob.monthlyPayMax
+                                    ? `₱${formatCurrency(selectedJob.monthlyPayMin)} - ₱${formatCurrency(selectedJob.monthlyPayMax)}`
+                                    : "Not specified"}
                               </p>
                             </div>
                             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
@@ -810,9 +817,9 @@ function CompanyDashboard({ onBack, onJobUpload }: { onBack: () => void; onJobUp
         <Image 
           src="/Ailogo.png" 
           alt="AIdeal Job Logo" 
-          width={120} 
-          height={40} 
-          className="object-contain shrink-0" 
+          width={64} 
+          height={64} 
+          className="object-contain w-16 h-16 shrink-0" 
           priority
         />
         <div className="flex flex-col border-l-2 border-[var(--border)] pl-4">
@@ -897,7 +904,7 @@ function CompanyDashboard({ onBack, onJobUpload }: { onBack: () => void; onJobUp
             <p className="mt-1 text-sm text-[var(--muted)]">Environment: {uploadedJob.environment}</p>
             <p className="mt-1 text-sm text-[var(--muted)]">
               Monthly Pay: {uploadedJob.monthlyPayMin && uploadedJob.monthlyPayMax
-                ? `₱${uploadedJob.monthlyPayMin.toLocaleString()} - ₱${uploadedJob.monthlyPayMax.toLocaleString()}`
+                ? `₱${formatCurrency(uploadedJob.monthlyPayMin)} - ₱${formatCurrency(uploadedJob.monthlyPayMax)}`
                 : "Not specified"}
             </p>
             <p className="mt-1 text-sm text-[var(--muted)]">Required Skills: {uploadedJob.requiredSkills?.join(", ")}</p>
@@ -973,9 +980,9 @@ function ApplicantDashboard({ onBack, onResumeUpload }: { onBack: () => void; on
         <Image 
           src="/Ailogo.png" 
           alt="AIdeal Job Logo" 
-          width={120} 
-          height={40} 
-          className="object-contain shrink-0" 
+          width={64} 
+          height={64} 
+          className="object-contain w-16 h-16 shrink-0" 
           priority
         />
         <div className="flex flex-col border-l-2 border-[var(--border)] pl-4">

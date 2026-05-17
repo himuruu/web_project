@@ -238,3 +238,7 @@ export default function Home() {
     </div>
   );
 }
+
+function preventDefault() {
+  throw new Error("Function not implemented.");
+}

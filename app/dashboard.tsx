@@ -3,6 +3,18 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 
+const dashboardTranslations: Record<string, any> = {
+  English: {
+    headerTitle: "Applicant Dashboard",
+  },
+  Spanish: {
+    headerTitle: "Panel de Solicitantes",
+  },
+  French: {
+    headerTitle: "Tableau de Bord des Candidats",
+  },
+};
+
 const sampleResumes = [
   {
     id: "candidate-1",
@@ -55,7 +67,13 @@ function calculateMatchScore(resume: any, job: any): number {
   return Math.round(skillMatch * 0.5 + experienceBonus * 0.3 + strengthBonus * 0.2);
 }
 
-export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }) {
+interface DashboardProps {
+  onBackToHome?: () => void;
+  currentLanguage: string;
+}
+
+export default function Dashboard({ onBackToHome, currentLanguage }: DashboardProps) {
+  const t = dashboardTranslations[currentLanguage] || dashboardTranslations["English"];
   const [userType, setUserType] = useState<"company" | "applicant" | null>(null);
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [jobs, setJobs] = useState<any[]>([]);
@@ -183,6 +201,10 @@ export default function Dashboard({ onBackToHome }: { onBackToHome: () => void }
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--foreground)]">Ai Recruitment Hub</h1>
             <p className="mt-1 text-sm sm:text-base font-medium text-[var(--muted)] max-w-[360px] leading-snug">
               Hire smarter, not harder- let AI find the talent your business deserves
+            </p>
+            <p className="mt-3 text-sm font-semibold text-[var(--accent)]">{t.headerTitle}</p>
+            <p className="mt-2 text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
+              Current Language: <span className="font-semibold text-[var(--foreground)]">{currentLanguage}</span>
             </p>
           </div>
         </div>

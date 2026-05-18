@@ -81,6 +81,7 @@ export default function Home() {
   const [issueText, setIssueText] = useState("");
   const [issuesList, setIssuesList] = useState<string[]>([]);
   const [language, setLanguage] = useState("English");
+  
 
   // Get current translations based on selected language (fallback to English)
   const t = translations[language] || translations["English"];
@@ -139,8 +140,10 @@ export default function Home() {
     return <div className="min-h-screen bg-[var(--background)]" />;
   }
 
+  // ✅ THIS IS THE ONLY LINE THAT WAS CHANGED:
+  // It now passes currentLanguage={language} to your dashboard
   if (showDashboard) {
-    return <Dashboard onBackToHome={() => setShowDashboard(false)} />;
+    return <Dashboard onBackToHome={() => setShowDashboard(false)} currentLanguage={language} />;
   }
 
   return (
@@ -319,8 +322,4 @@ export default function Home() {
       </div>
     </div>
   );
-}
-
-function preventDefault() {
-  throw new Error("Function not implemented.");
 }

@@ -298,7 +298,72 @@ export default function Home() {
 
       {/* CHATBOT REMAINS THE SAME DOWN HERE */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-        {/* ... (Keep your existing chatbot code here) ... */}
+        {showWidget && (
+          <div className="w-80 h-[450px] flex flex-col rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl mb-4 overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+            {/* Header */}
+            <div className="p-4 border-b border-[var(--border)] bg-[var(--background)] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="font-bold text-sm text-[var(--foreground)]">AI Support Bot</span>
+              </div>
+              <button 
+                onClick={() => setShowWidget(false)} 
+                className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+              {chatMessages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${
+                    msg.role === "user" 
+                      ? "bg-[var(--accent)] text-[#020617] rounded-br-none shadow-sm" 
+                      : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] rounded-bl-none"
+                  }`}>
+                    {msg.text}
+                  </div>
+                </div>
+              ))}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-[var(--background)] border border-[var(--border)] p-3 rounded-2xl rounded-bl-none">
+                    <div className="flex gap-1">
+                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" />
+                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:0.2s]" />
+                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:0.4s]" />
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-[var(--border)] bg-[var(--background)]">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Ask me anything..."
+                  className="w-full py-2.5 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)] transition-all"
+                />
+                <button 
+                  type="submit"
+                  disabled={!chatInput.trim() || isTyping}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-[var(--accent)] text-[#020617] rounded-lg disabled:opacity-50 disabled:grayscale transition-all hover:scale-105 active:scale-95"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
         <button
           onClick={() => setShowWidget(!showWidget)}
           className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border transition-all duration-200 ${

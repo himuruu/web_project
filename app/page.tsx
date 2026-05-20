@@ -150,17 +150,17 @@ export default function Home() {
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col relative transition-colors duration-200">
       
       {/* Super Clean Top Header */}
-      <nav className="flex items-center justify-between px-8 py-6 border-b border-[var(--border)] bg-[var(--surface)] sticky top-0 z-40">
-        <div className="flex items-center gap-3">
+      <nav className="flex items-center justify-between px-8 py-6 border-b border-[var(--border)] bg-[var(--surface)] sticky top-0 z-35">
+        <div className="flex items-center gap-2">
           <Image 
             src="/Ailogo.png" 
             alt="AIdeal Job Logo" 
-            width={120} 
-            height={40} 
+            width={64} 
+            height={32} 
             className="object-contain"
             priority
           />
-          <span className="text-lg font-semibold hidden sm:inline">Ai Recruitment Hub</span>
+          <span className="text-lg font-semibold hidden sm:inline">Aideal Recruit Hub</span>
         </div>
         
         {/* Settings Dropdown Container */}

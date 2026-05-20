@@ -276,22 +276,32 @@ export default function Dashboard({ onBackToHome, currentLanguage }: DashboardPr
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                  <div>
+                <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="min-w-0">
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Environment</p>
-                    <p className="mt-2 text-lg font-semibold text-[var(--foreground)]">{job.environment || "Not specified"}</p>
+                    <p className="mt-2 text-base font-semibold text-[var(--foreground)] break-words">{job.environment || "Not specified"}</p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Monthly Pay</p>
-                    <p className="mt-2 text-sm text-[var(--foreground)]">
+                    <p className="mt-2 text-sm font-semibold text-[var(--foreground)] break-words">
                       {job.monthlyPayMin && job.monthlyPayMax
                         ? `₱${formatCurrency(job.monthlyPayMin)} - ₱${formatCurrency(job.monthlyPayMax)}`
                         : "Not specified"}
                     </p>
                   </div>
-                  <div>
+                  <div className="sm:col-span-2 lg:col-span-1 min-w-0">
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Required Skills</p>
-                    <p className="mt-2 text-sm text-[var(--foreground)]">{job.requiredSkills?.join(", ") || "None specified"}</p>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {job.requiredSkills?.length > 0 ? (
+                        job.requiredSkills.map((skill: string, i: number) => (
+                          <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-[var(--border)] text-[var(--foreground)]">
+                            {skill}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-[var(--muted)]">None specified</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </article>
@@ -437,8 +447,8 @@ export default function Dashboard({ onBackToHome, currentLanguage }: DashboardPr
                             </div>
                           </div>
 
-                          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
+                          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 flex flex-col min-w-0">
                               <div className="flex items-center gap-2 mb-2">
                                 <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M20 7h-3V6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v1H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1Z" />
@@ -446,9 +456,9 @@ export default function Dashboard({ onBackToHome, currentLanguage }: DashboardPr
                                 </svg>
                                 <p className="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--muted)]">Work Environment</p>
                               </div>
-                              <p className="text-base font-medium text-[var(--foreground)]">{selectedJob.environment || "Not specified"}</p>
+                              <p className="text-base font-medium text-[var(--foreground)] break-words leading-relaxed">{selectedJob.environment || "Not specified"}</p>
                             </div>
-                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
+                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 flex flex-col min-w-0">
                               <div className="flex items-center gap-2 mb-2">
                                 <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <line x1="12" y1="1" x2="12" y2="23" />
@@ -456,23 +466,23 @@ export default function Dashboard({ onBackToHome, currentLanguage }: DashboardPr
                                 </svg>
                                 <p className="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--muted)]">Monthly Salary</p>
                               </div>
-                              <p className="text-base font-medium text-[var(--foreground)]">
+                              <p className="text-base font-medium text-[var(--foreground)] break-words leading-relaxed">
                                   {selectedJob.monthlyPayMin && selectedJob.monthlyPayMax
                                     ? `₱${formatCurrency(selectedJob.monthlyPayMin)} - ₱${formatCurrency(selectedJob.monthlyPayMax)}`
                                     : "Not specified"}
                               </p>
                             </div>
-                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
+                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 flex flex-col min-w-0 md:col-span-2 lg:col-span-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--accent)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                                 </svg>
                                 <p className="text-xs uppercase tracking-[0.15em] font-semibold text-[var(--muted)]">Required Skills</p>
                               </div>
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-wrap gap-2">
                                 {selectedJob.requiredSkills?.length > 0 ? (
                                   selectedJob.requiredSkills.map((skill: string, index: number) => (
-                                    <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
+                                    <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 whitespace-normal text-center">
                                       {skill}
                                     </span>
                                   ))
@@ -921,15 +931,22 @@ function CompanyDashboard({ onBack, onJobUpload }: { onBack: () => void; onJobUp
         {uploadedJob && (
           <div className="mt-6 p-4 bg-[var(--surface)] border border-[var(--border)] rounded-lg">
             <h3 className="text-lg font-semibold">Uploaded Job</h3>
-            <p className="mt-2 text-sm text-[var(--muted)]">Title: {uploadedJob.title}</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">Description: {uploadedJob.description}</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">Environment: {uploadedJob.environment}</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">
+            <p className="mt-2 text-sm text-[var(--muted)] break-words">Title: {uploadedJob.title}</p>
+            <p className="mt-1 text-sm text-[var(--muted)] break-words">Description: {uploadedJob.description}</p>
+            <p className="mt-1 text-sm text-[var(--muted)] break-words">Environment: {uploadedJob.environment}</p>
+            <p className="mt-1 text-sm text-[var(--muted)] break-words">
               Monthly Pay: {uploadedJob.monthlyPayMin && uploadedJob.monthlyPayMax
                 ? `₱${formatCurrency(uploadedJob.monthlyPayMin)} - ₱${formatCurrency(uploadedJob.monthlyPayMax)}`
                 : "Not specified"}
             </p>
-            <p className="mt-1 text-sm text-[var(--muted)]">Required Skills: {uploadedJob.requiredSkills?.join(", ")}</p>
+            <div className="mt-1 flex flex-wrap gap-1">
+              <span className="text-sm text-[var(--muted)]">Required Skills: </span>
+              {uploadedJob.requiredSkills?.map((skill: string, i: number) => (
+                <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] bg-[var(--border)] text-[var(--muted)]">
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>

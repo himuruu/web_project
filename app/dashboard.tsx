@@ -198,13 +198,12 @@ export default function Dashboard({ onBackToHome, currentLanguage }: DashboardPr
             priority
           />
           <div className="flex flex-col border-l-2 border-[var(--border)] pl-5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--foreground)]">Ai Recruitment Hub</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--foreground)]">Aideal Recruit Hub</h1>
             <p className="mt-1 text-sm sm:text-base font-medium text-[var(--muted)] max-w-[360px] leading-snug">
               Hire smarter, not harder- let AI find the talent your business deserves
             </p>
             <p className="mt-3 text-sm font-semibold text-[var(--accent)]">{t.headerTitle}</p>
             <p className="mt-2 text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
-              Current Language: <span className="font-semibold text-[var(--foreground)]">{currentLanguage}</span>
             </p>
           </div>
         </div>
